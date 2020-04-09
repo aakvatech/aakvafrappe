@@ -14,7 +14,6 @@ import frappe.utils.scheduler
 import cProfile, pstats
 from six import StringIO
 from six.moves import reload_module
-from frappe.model.naming import revert_series_if_last
 
 unittest_runner = unittest.TextTestRunner
 SLOW_TEST_THRESHOLD = 2
@@ -35,6 +34,9 @@ def main(app=None, module=None, doctype=None, verbose=False, tests=(),
 		app, doctype_list_path = doctype_list_path.split(os.path.sep, 1)
 		with open(frappe.get_app_path(app, doctype_list_path), 'r') as f:
 			doctype = f.read().strip().splitlines()
+
+	if ui_tests:
+		print("Selenium testing has been deprecated\nUse bench --site {site_name} run-ui-tests for Cypress tests")
 
 	xmloutput_fh = None
 	if junit_xml_output:
@@ -71,7 +73,7 @@ def main(app=None, module=None, doctype=None, verbose=False, tests=(),
 		else:
 			ret = run_all_tests(app, verbose, profile, ui_tests, failfast=failfast, junit_xml_output=junit_xml_output)
 
-		frappe.db.commit()
+		if frappe.db: frappe.db.commit()
 
 		# workaround! since there is no separate test db
 		frappe.clear_cache()
@@ -346,11 +348,6 @@ def make_test_objects(doctype, test_records=None, verbose=None, reset=False):
 	'''Make test objects from given list of `test_records` or from `test_records.json`'''
 	records = []
 
-	def revert_naming(d):
-		if getattr(d, 'naming_series', None):
-			revert_series_if_last(d.naming_series, d.name)
-
-
 	if test_records is None:
 		test_records = frappe.get_test_records(doctype)
 
@@ -378,22 +375,11 @@ def make_test_objects(doctype, test_records=None, verbose=None, reset=False):
 		docstatus = d.docstatus
 
 		d.docstatus = 0
+		d.run_method("before_test_insert")
+		d.insert()
 
-		try:
-			d.run_method("before_test_insert")
-			d.insert()
-
-			if docstatus == 1:
-				d.submit()
-
-		except frappe.NameError:
-			revert_naming(d)
-
-		except Exception as e:
-			if d.flags.ignore_these_exceptions_in_test and e.__class__ in d.flags.ignore_these_exceptions_in_test:
-				revert_naming(d)
-			else:
-				raise
+		if docstatus == 1:
+			d.submit()
 
 		records.append(d.name)
 

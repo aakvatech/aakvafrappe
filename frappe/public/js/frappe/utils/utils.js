@@ -59,6 +59,17 @@ Object.assign(frappe.utils, {
 	strip_whitespace: function(html) {
 		return (html || "").replace(/<p>\s*<\/p>/g, "").replace(/<br>(\s*<br>\s*)+/g, "<br><br>");
 	},
+	update_url_target: function(html){
+		var parser = new DOMParser();
+		var doc = parser.parseFromString(html, "text/html");
+		if (doc.body){
+			var anchors = doc.body.querySelectorAll("a");
+			if (anchors.length) {
+				anchors.forEach(anchor => {anchor.target = "_blank";});
+			}
+		}
+		return doc.documentElement.innerHTML;
+	},
 	encode_tags: function(html) {
 		var tagsToReplace = {
 			'&': '&amp;',
@@ -267,8 +278,8 @@ Object.assign(frappe.utils, {
 			} else if(has_words(["Open", "Urgent", "High", "Failed", "Rejected", "Error"], text)) {
 				style = "danger";
 				colour = "red";
-			} else if(has_words(["Closed", "Finished", "Converted", "Completed", "Confirmed",
-				"Approved", "Yes", "Active", "Available", "Paid"], text)) {
+			} else if(has_words(["Closed", "Finished", "Converted", "Completed", "Complete", "Confirmed",
+				"Approved", "Yes", "Active", "Available", "Paid", "Success"], text)) {
 				style = "success";
 				colour = "green";
 			} else if(has_words(["Submitted"], text)) {

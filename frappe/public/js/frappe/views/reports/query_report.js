@@ -116,7 +116,6 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 		this.page_name = frappe.get_route_str();
 		this.report_name = this.route[1];
 		this.page_title = __(this.report_name);
-		this.show_save = false;
 		this.menu_items = this.get_menu_items();
 		this.datatable = null;
 		this.prepared_report_action = "New";
@@ -453,6 +452,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 
 	render_datatable() {
 		let data = this.data;
+		let columns = this.columns.filter((col) => !col.hidden);
 
 		if (this.raw_data.add_total_row) {
 			data = data.slice();
@@ -462,10 +462,10 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 		if (this.datatable && this.datatable.options
 			&& (this.datatable.options.showTotalRow ===this.raw_data.add_total_row)) {
 			this.datatable.options.treeView = this.tree_report;
-			this.datatable.refresh(data, this.columns);
+			this.datatable.refresh(data, columns);
 		} else {
 			let datatable_options = {
-				columns: this.columns.filter((col) => !col.hidden),
+				columns: columns,
 				data: data,
 				inlineFilters: true,
 				treeView: this.tree_report,
@@ -1173,7 +1173,6 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 									columns: this.get_visible_columns()
 								},
 								callback: function(r) {
-									this.show_save = false;
 									d.hide();
 									frappe.set_route('query-report', r.message);
 								}
