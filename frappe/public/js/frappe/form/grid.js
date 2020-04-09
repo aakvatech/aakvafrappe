@@ -193,6 +193,8 @@ export default class Grid {
 		}
 	}
 	refresh(force) {
+		this.df.data = this.df.data || [];
+		this.data = this.get_data();
 		!this.wrapper && this.make();
 		var me = this,
 			$rows = $(me.parent).find(".rows"),
@@ -489,7 +491,13 @@ export default class Grid {
 				if (!this.df.data) {
 					this.df.data = this.get_data() || [];
 				}
-				this.df.data.push({idx: this.df.data.length+1, __islocal: true});
+				var d = { idx: this.df.data.length + 1, __islocal: true, doctype: this.doctype, parentfield: this.df.fieldname, parenttype: frappe.web_form.doctype }
+				this.df.data.push(d);
+				if (!(this.df.fieldname in frappe.web_form.doc)) {
+					frappe.web_form.doc[this.df.fieldname] = [];
+				}
+				frappe.web_form.doc[this.df.fieldname].push(d);
+
 				this.refresh();
 			}
 
@@ -506,7 +514,6 @@ export default class Grid {
 					}
 				}
 			}
-
 			return d;
 		}
 	}
