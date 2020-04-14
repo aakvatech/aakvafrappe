@@ -546,8 +546,7 @@ frappe.provide("frappe.views");
 			var opts = {
 				name: card.name,
 				title: remove_img_tags(card.title),
-				disable_click: card._disable_click ? 'disable-click' : '',
-				doc: card.doc
+				disable_click: card._disable_click ? 'disable-click' : ''
 			};
 			self.$card = $(frappe.render_template('kanban_card', opts))
 				.appendTo(wrapper);
@@ -555,19 +554,8 @@ frappe.provide("frappe.views");
 
 		function render_card_meta() {
 			var html = "";
-
-			// Add estimated due date to the card
-			if (card.doc.exp_end_date) {
-				let day_diff = frappe.datetime.get_day_diff(card.doc.exp_end_date, frappe.datetime.get_today());
-				let due_date_text = day_diff > 0 ? "Due" : "Overdue since";
-				due_date_text += ` ${comment_when(card.doc.exp_end_date)}`;
-
-				html += `<span class="pull-left small text-muted">${due_date_text}</span><br>`;
-			}
-
-			// Add comment count to the card
 			if (card.comment_count > 0)
-				html += '<span class="list-comment-count small pull-left text-muted ">' +
+				html += '<span class="list-comment-count small text-muted ">' +
 					'<i class="octicon octicon-comment"></i> ' + card.comment_count +
 					'</span>';
 			html += get_assignees_html();
@@ -665,7 +653,7 @@ frappe.provide("frappe.views");
 			assigned_list: card.assigned_list || assigned_list,
 			comment_count: card.comment_count || comment_count,
 			color: card.color || null,
-			doc: doc || card
+			doc: doc
 		};
 	}
 

@@ -82,7 +82,7 @@
   opacity: 1;
 }
 .kanban .kanban-card-title {
-  max-width: 99%;
+  max-width: 90%;
   font-size: 12px;
 }
 .kanban .kanban-card-edit {

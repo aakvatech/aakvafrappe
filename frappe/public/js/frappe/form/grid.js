@@ -69,7 +69,7 @@ export default class Grid {
 							${__("Delete")}</button>
 						<button class="grid-add-multiple-rows btn btn-xs btn-default hidden"
 							style="margin-right: 4px;">
-							${__("Add Multiple")}</button>
+							${__("Add Multiple")}</a>
 						<!-- hack to allow firefox include this in tabs -->
 						<button class="btn btn-xs btn-default grid-add-row">
 							${__("Add Row")}</button>
@@ -584,8 +584,8 @@ export default class Grid {
 				}
 				else {
 					var colsize = 2;
-					switch (df.fieldtype) {
-						case "Text": break;
+					switch(df.fieldtype) {
+						case "Text":
 						case "Small Text": colsize = 3; break;
 						case "Check": colsize = 1;
 					}

@@ -13,6 +13,7 @@ from frappe.utils.verified_command import get_signed_params, verify_request
 from html2text import html2text
 from frappe.utils import get_url, nowdate, now_datetime, add_days, split_emails, cstr, cint
 from rq.timeouts import JobTimeoutException
+from frappe.utils.scheduler import log
 from six import text_type, string_types, PY3
 from email.parser import Parser
 
@@ -323,7 +324,7 @@ def unsubscribe(doctype, name, email):
 
 def return_unsubscribed_page(email, doctype, name):
 	frappe.respond_as_web_page(_("Unsubscribed"),
-		_("You have successfully unsubscribed"),
+		_("{0} has left the conversation in {1} {2}").format(email, _(doctype), name),
 		indicator_color='green')
 
 def flush(from_test=False):
@@ -475,7 +476,7 @@ def send_one(email, smtpserver=None, auto_commit=True, now=False, from_test=Fals
 
 		else:
 			# log to Error Log
-			frappe.log_error('frappe.email.queue.flush')
+			log('frappe.email.queue.flush', text_type(e))
 
 def prepare_message(email, recipient, recipients_list):
 	message = email.message
