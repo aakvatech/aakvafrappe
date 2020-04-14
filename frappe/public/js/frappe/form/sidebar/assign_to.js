@@ -140,7 +140,6 @@ frappe.ui.form.AssignToDialog = Class.extend({
 				{ fieldtype: 'Section Break' },
 				{ fieldtype: 'Column Break' },
 				{ fieldtype: 'Date', fieldname: 'date', label: __("Complete By") },
-				{ fieldtype: 'Check', fieldname: 'notify', label: __("Notify by Email") },
 				{ fieldtype: 'Column Break' },
 				{ fieldtype: 'Select', fieldname: 'priority', label: __("Priority"),
 					options: [

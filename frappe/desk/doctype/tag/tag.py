@@ -5,7 +5,6 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
-from frappe.utils import unique
 
 class Tag(Document):
 	pass
@@ -82,7 +81,7 @@ class DocTags:
 		if not tl:
 			tags = ''
 		else:
-			tl = unique(filter(lambda x: x, tl))
+			tl = list(set(filter(lambda x: x, tl)))
 			tags = ',' + ','.join(tl)
 		try:
 			frappe.db.sql("update `tab%s` set _user_tags=%s where name=%s" % \

@@ -33,34 +33,16 @@ def can_cache(no_cache=False):
 		return False
 	return not no_cache
 
-
 def get_comment_list(doctype, name):
-	comments = frappe.get_all('Comment',
-		fields=['name', 'creation', 'owner',
-				'comment_email', 'comment_by', 'content'],
-		filters=dict(
-			reference_doctype=doctype,
-			reference_name=name,
-			comment_type='Comment',
-		),
-		or_filters=[
-			['owner', '=', frappe.session.user],
-			['published', '=', 1]])
-
-	communications = frappe.get_all("Communication",
-		fields=['name', 'creation', 'owner', 'owner as comment_email',
-				'sender_full_name as comment_by', 'content', 'recipients'],
-		filters=dict(
-			reference_doctype=doctype,
-			reference_name=name,
-		),
-		or_filters=[
-			['recipients', 'like', '%{0}%'.format(frappe.session.user)],
-			['cc', 'like', '%{0}%'.format(frappe.session.user)],
-			['bcc', 'like', '%{0}%'.format(frappe.session.user)]])
-
-	return sorted((comments + communications), key=lambda comment: comment['creation'], reverse=True)
-
+	return frappe.get_all('Comment',
+			fields = ['name', 'creation', 'owner', 'comment_email', 'comment_by', 'content'],
+			filters = dict(
+				reference_doctype = doctype,
+				reference_name = name,
+				comment_type = 'Comment',
+				published = 1
+			),
+			order_by = 'creation asc')
 
 def get_home_page():
 	if frappe.local.flags.home_page:
