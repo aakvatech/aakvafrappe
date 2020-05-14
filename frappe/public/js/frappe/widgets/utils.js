@@ -8,7 +8,9 @@ function generate_route(item) {
 		if (item.link) {
 			route = strip(item.link, "#");
 		} else if (type === "doctype") {
-			if (frappe.model.is_single(item.doctype)) {
+			if (frappe.model.is_tree(item.doctype)) {
+				route = "Tree/" + item.doctype;
+			} else if (frappe.model.is_single(item.doctype)) {
 				route = "Form/" + item.doctype;
 			} else {
 				if (item.filters) {
@@ -22,6 +24,8 @@ function generate_route(item) {
 			route = "List/" + item.doctype + "/Report/" + item.name;
 		} else if (type === "page") {
 			route = item.name;
+		} else if (type === "dashboard") {
+			route = "dashboard/" + item.name;
 		}
 
 		route = "#" + route;
