@@ -92,12 +92,6 @@ frappe.ui.form.on('Dashboard Chart', {
 				}
 			});
 		} else {
-			if (frm.doc.chart_type == 'Group By') {
-				frm.set_df_property('type', 'options', ['Line', 'Bar', 'Percentage', 'Pie', 'Donut']);
-			} else {
-				frm.set_df_property('type', 'options', ['Line', 'Bar', 'Heatmap']);
-			}
-
 			frm.set_value('document_type', '');
 		}
 	},
@@ -359,6 +353,8 @@ frappe.ui.form.on('Dashboard Chart', {
 			dialog.show();
 			//Set query report object so that it can be used while fetching filter values in the report
 			frappe.query_report = new frappe.views.QueryReport({'filters': dialog.fields_list});
+			frappe.query_reports[frm.doc.report_name].onload
+				&& frappe.query_reports[frm.doc.report_name].onload(frappe.query_report);
 			dialog.set_values(filters);
 		});
 	},

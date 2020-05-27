@@ -412,6 +412,8 @@ export default class ChartWidget extends Widget {
 		dialog.show();
 		//Set query report object so that it can be used while fetching filter values in the report
 		frappe.query_report = new frappe.views.QueryReport({'filters': dialog.fields_list});
+		frappe.query_reports[this.chart_doc.report_name].onload
+				&& frappe.query_reports[this.chart_doc.report_name].onload(frappe.query_report);
 		dialog.set_values(this.filters);
 	}
 
@@ -523,7 +525,6 @@ export default class ChartWidget extends Widget {
 		}
 	}
 
-
 	get_chart_args() {
 		let colors = this.get_chart_colors();
 
@@ -553,6 +554,21 @@ export default class ChartWidget extends Widget {
 			chart_args.data.end = new Date(`${heatmap_year+1}-01-01`);
 		}
 
+		let set_options = (options) => {
+			let custom_options = JSON.parse(options);
+			for (let key in custom_options) {
+				chart_args[key] = custom_options[key];
+			}
+		};
+
+		if (this.custom_options) {
+			set_options(this.custom_options);
+		}
+
+		if (this.chart_doc.custom_options) {
+			set_options(this.chart_doc.custom_options);
+		}
+
 		return chart_args;
 	}
 
@@ -563,7 +579,7 @@ export default class ChartWidget extends Widget {
 				colors.push(field.color);
 			});
 		} else if (["Line", "Bar"].includes(this.chart_doc.type)) {
-			colors = [this.chart_doc.color || "light-blue"];
+			colors = [this.chart_doc.color || []];
 		}  else if (this.chart_doc.type == "Heatmap") {
 			colors = [];
 		}
